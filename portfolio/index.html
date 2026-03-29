@@ -7,9 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ══ ROOT ══ */
 :root{
-  --void:#01010a;--deep:#060612;--card:#0e0e1d;--card2:#131328;
+  --void:#01010a;--card:#0e0e1d;--card2:#131328;
   --border:rgba(120,100,255,.14);--border2:rgba(255,255,255,.07);
   --accent:#6c63ff;--ab:#9b95ff;--neon:#00f5d4;--neon2:#ff4d6d;--gold:#ffd166;
   --text:#eeeeff;--muted:#5a5878;--muted2:#8886aa;
@@ -19,33 +18,55 @@
 html{scroll-behavior:auto}
 body{background:var(--void);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;cursor:none}
 
-/* ── CURSOR ── */
+/* CURSOR */
 #cdot{position:fixed;width:8px;height:8px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--neon),0 0 28px rgba(0,245,212,.3)}
 #cring{position:fixed;width:36px;height:36px;border:1px solid rgba(108,99,255,.5);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s}
 #ctrail{position:fixed;width:130px;height:130px;background:radial-gradient(circle,rgba(108,99,255,.06) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%)}
 body.hov #cdot{background:var(--ab);transform:translate(-50%,-50%) scale(1.8)}
 body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 
-/* ══ FIXED BACKGROUND ══ */
+/* ── FIXED BACKGROUND LAYERS ── */
 #bg-base{position:fixed;inset:0;z-index:0;background:var(--void)}
-#starfield{position:fixed;inset:0;z-index:1;pointer-events:none}
-#nebula{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.65}
+/* Layer 1: deep stars (slowest parallax) */
+#stars-deep{position:fixed;inset:0;z-index:1;pointer-events:none}
+/* Layer 2: mid stars */
+#stars-mid{position:fixed;inset:0;z-index:2;pointer-events:none}
+/* Layer 3: close stars + shooting stars */
+#stars-close{position:fixed;inset:0;z-index:3;pointer-events:none}
+/* Layer 4: nebula blobs */
+#nebula{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:.7}
+/* Layer 5: grid */
 #gridlines{
-  position:fixed;inset:0;z-index:1;pointer-events:none;
-  background-image:linear-gradient(rgba(108,99,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(108,99,255,.035) 1px,transparent 1px);
+  position:fixed;inset:0;z-index:5;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(108,99,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(108,99,255,.03) 1px,transparent 1px);
   background-size:80px 80px;
-  mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black,transparent);
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black,transparent);
+}
+/* Layer 6: vignette */
+#vignette{
+  position:fixed;inset:0;z-index:6;pointer-events:none;
+  background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 40%,rgba(1,1,10,.5) 100%);
+}
+/* Layer 7: mouse-glow (moves with cursor) */
+#mouse-glow{
+  position:fixed;width:500px;height:500px;border-radius:50%;
+  pointer-events:none;z-index:7;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(108,99,255,.07) 0%,transparent 70%);
+  transition:background .4s;
 }
 
-/* ══ PROGRESS ══ */
+/* Progress */
 #pbar{position:fixed;top:0;left:0;height:2px;z-index:5000;background:linear-gradient(90deg,var(--accent),var(--neon),var(--neon2));width:0%;box-shadow:0 0 10px var(--neon)}
 
-/* ══ NAV ══ */
-#nav{position:fixed;top:0;left:0;right:0;z-index:4000;display:flex;justify-content:space-between;align-items:center;padding:16px 60px;background:rgba(1,1,10,.82);backdrop-filter:blur(32px) saturate(2);border-bottom:1px solid var(--border2);transform:translateY(-100%);animation:navIn .9s .3s cubic-bezier(.22,1,.36,1) forwards}
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:4000;display:flex;justify-content:space-between;align-items:center;padding:16px 60px;background:rgba(1,1,10,.76);backdrop-filter:blur(32px) saturate(2);border-bottom:1px solid var(--border2);transform:translateY(-100%);animation:navIn .9s .3s cubic-bezier(.22,1,.36,1) forwards}
 @keyframes navIn{to{transform:none}}
 .nav-logo{font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;letter-spacing:.22em;background:linear-gradient(90deg,var(--ab),var(--neon));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nav-links{display:flex;gap:20px;align-items:center}
-.nav-links a{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--muted2);text-decoration:none;letter-spacing:.13em;text-transform:uppercase;transition:color .3s;position:relative;padding:4px 0}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted2);text-decoration:none;letter-spacing:.13em;text-transform:uppercase;transition:color .3s;position:relative;padding:4px 0}
 .nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:linear-gradient(90deg,var(--accent),var(--neon));transition:width .35s cubic-bezier(.22,1,.36,1)}
 .nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
 .ndot{width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon);animation:blink 2s infinite}
@@ -56,227 +77,127 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .nav-mob a{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted2);text-decoration:none;letter-spacing:.12em;text-transform:uppercase;padding:11px 0;border-bottom:1px solid var(--border2);transition:color .2s}
 .nav-mob a:hover{color:var(--neon)}.nav-mob.open{display:flex}
 
-/* ══ SCROLL WRAPPER — content scrolls over fixed bg ══ */
-.pw{position:relative;z-index:2}
+/* PAGE WRAPPER */
+.pw{position:relative;z-index:8}
 
-/* ══ SECTIONS — transparent, content scrolls over stars ══ */
+/* ═══════════════════════════════════════
+   SECTIONS — ALL FULLY TRANSPARENT
+   No background on .ss or .si at all.
+   Content elements (cards, text, etc.) have
+   their own individual backgrounds so they
+   appear to float directly over starfield.
+═══════════════════════════════════════ */
 .ss{
   position:relative;
-  padding:64px 0 52px;
+  padding:72px 0 58px;
   display:flex;flex-direction:column;justify-content:center;
-  /* NO overflow:hidden so parallax layers can breathe */
+  background:transparent !important;  /* fully transparent */
 }
-.ss.tall{min-height:100vh;padding:0}
+.ss.tall{min-height:100vh;padding:0;background:transparent!important}
 
-/* Glass panels keep text readable over starfield */
-.glass-panel{
-  background:rgba(5,5,16,.82);
-  backdrop-filter:blur(28px) saturate(1.5);
-  border-top:1px solid rgba(255,255,255,.06);
-  border-bottom:1px solid rgba(255,255,255,.06);
+/* Remove all glass-panel / tint overrides — everything transparent */
+.glass-panel,.tint-a,.tint-b{
+  background:transparent!important;
+  backdrop-filter:none!important;
+  border:none!important;
 }
-.tint-a{background:rgba(6,6,18,.84)!important}
-.tint-b{background:rgba(9,9,24,.74)!important}
 
 .si{padding:0 80px;position:relative;z-index:2;max-width:1380px;margin:0 auto;width:100%}
 .ss.tall .si{padding:110px 80px 70px}
 
+/* Individual card / element backgrounds float over starfield */
+.pcard,.ach-card,.cert-card,.fun-card,.terminal,.tcat{
+  background:rgba(8,8,22,.78);
+  backdrop-filter:blur(22px) saturate(1.4);
+}
+
 /* ══ WARP DIVIDER ══ */
-.wd{height:64px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;z-index:2}
-.wr{width:230px;height:52px;border-radius:50%;border:1px solid var(--border);box-shadow:0 0 24px rgba(108,99,255,.07);animation:rp 5s ease-in-out infinite;position:absolute;will-change:transform}
-.wr:nth-child(2){width:410px;height:82px;animation-delay:-1.4s;opacity:.38}
-.wr:nth-child(3){width:600px;height:120px;animation-delay:-2.8s;opacity:.16}
+.wd{height:60px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;z-index:2;background:transparent}
+.wr{width:220px;height:50px;border-radius:50%;border:1px solid var(--border);box-shadow:0 0 22px rgba(108,99,255,.07);animation:rp 5s ease-in-out infinite;position:absolute}
+.wr:nth-child(2){width:400px;height:78px;animation-delay:-1.4s;opacity:.36}
+.wr:nth-child(3){width:580px;height:116px;animation-delay:-2.8s;opacity:.15}
 @keyframes rp{0%,100%{transform:scaleX(1) scaleY(1)}50%{transform:scaleX(1.07) scaleY(1.14)}}
 
 /* Labels & Titles */
-.lbl{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--neon);letter-spacing:.25em;text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--neon);letter-spacing:.25em;text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .lbl::before{content:'';width:28px;height:1px;background:linear-gradient(90deg,transparent,var(--neon))}
 .lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--neon),transparent);max-width:60px}
 .stitle{font-family:'Orbitron',monospace;font-size:clamp(1.65rem,3.7vw,3.4rem);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin-bottom:16px}
 
-/* Reveal (enter only – clean) */
-.rv{opacity:0;transform:translateY(46px) scale(.965);transition:opacity .82s cubic-bezier(.22,1,.36,1),transform .82s cubic-bezier(.22,1,.36,1)}
+/* Reveal */
+.rv{opacity:0;transform:translateY(44px) scale(.965);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
 .rv.on{opacity:1;transform:none}
-.rvl{opacity:0;transform:translateX(-46px);transition:opacity .82s cubic-bezier(.22,1,.36,1),transform .82s cubic-bezier(.22,1,.36,1)}
+.rvl{opacity:0;transform:translateX(-44px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
 .rvl.on{opacity:1;transform:none}
-.rvr{opacity:0;transform:translateX(46px);transition:opacity .82s cubic-bezier(.22,1,.36,1),transform .82s cubic-bezier(.22,1,.36,1)}
+.rvr{opacity:0;transform:translateX(44px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
 .rvr.on{opacity:1;transform:none}
 
 /* ══════════════════════════════════════
-   ROBOT — YELLOW (reference image style)
-   Head sits clearly above body.
-   Visor/face are positioned INSIDE head
-   with correct spacing so they never overlap.
+   ROBOT
 ══════════════════════════════════════ */
-/* Outer wrap – placed to the right of hero name, pushed down so robot sits lower */
+/* Robot wrap — aligned to BOTTOM of name text */
 .robot-wrap{
   position:relative;
   width:200px;
   flex-shrink:0;
   cursor:pointer;
   animation:hup 1s .9s both;
-  margin-top:32px; /* push robot down from name top */
+  /* push robot DOWN so its top is at/below the name baseline */
   align-self:flex-end;
+  margin-bottom:0;  /* sits at same baseline as name bottom */
+  /* Extra top margin to lower it more */
+  padding-top:48px;
 }
 
-/* ── CHAT PANEL — fixed position beside robot, never overlaps body ── */
-/* Rendered as sibling outside robot-wrap, positioned via JS */
+/* Chat panel — fixed, outside robot */
 #robot-chat-panel{
-  position:fixed;
-  width:280px;
-  background:rgba(8,8,24,.97);
-  border:1px solid rgba(108,99,255,.4);
-  border-radius:16px;
-  padding:18px;
-  font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--text);
-  line-height:1.6;
-  box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 30px rgba(108,99,255,.1);
-  z-index:3500;
-  opacity:0;pointer-events:none;
-  transform:scale(.92) translateY(8px);
+  position:fixed;width:278px;
+  background:rgba(8,8,24,.97);border:1px solid rgba(108,99,255,.4);
+  border-radius:16px;padding:18px;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text);
+  line-height:1.6;box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 28px rgba(108,99,255,.1);
+  z-index:3500;opacity:0;pointer-events:none;
+  transform:scale(.9) translateY(10px);
   transition:opacity .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1);
-  backdrop-filter:blur(20px);
+  backdrop-filter:blur(22px);
 }
-#robot-chat-panel.open{
-  opacity:1;pointer-events:auto;
-  transform:scale(1) translateY(0);
-}
-#robot-chat-panel .chat-header{
-  font-size:.58rem;color:var(--neon);letter-spacing:.15em;text-transform:uppercase;
-  margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border2);
-  display:flex;align-items:center;gap:8px;
-}
-#robot-chat-panel .chat-header::before{content:'🤖';font-size:.9rem}
-.chat-msg{
-  margin-bottom:7px;padding:8px 11px;
-  background:rgba(108,99,255,.09);border-radius:9px;
-  border-left:2px solid var(--accent);font-size:.64rem;line-height:1.55;
-}
+#robot-chat-panel.open{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
+#robot-chat-panel .chat-header{font-size:.57rem;color:var(--neon);letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:8px}
+.chat-msg{margin-bottom:7px;padding:8px 11px;background:rgba(108,99,255,.09);border-radius:9px;border-left:2px solid var(--accent);font-size:.63rem;line-height:1.55}
 .chat-msg:last-child{margin-bottom:0}
-.chat-close{
-  position:absolute;top:10px;right:12px;
-  background:none;border:none;color:var(--muted);font-size:.9rem;cursor:pointer;
-  padding:2px 6px;border-radius:4px;transition:color .2s;font-family:inherit;
-}
+.chat-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--muted);font-size:.9rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .2s}
 .chat-close:hover{color:var(--text)}
 
-/* The scene that gets 3D-rotated */
-.robot-scene{
-  width:200px;height:260px;
-  transform-style:preserve-3d;
-  perspective:900px;
-  transition:transform .09s ease-out;
-  position:relative;
-}
+.robot-scene{width:200px;height:260px;transform-style:preserve-3d;perspective:900px;transition:transform .09s ease-out;position:relative}
 
-/* ── HEAD ── */
-/* Head sits at top of scene, absolute positioned */
-.rb-head{
-  position:absolute;
-  left:50%;top:0;
-  width:110px;height:88px;
-  transform:translateX(-50%);
-  background:white;
-  border-radius:55px 55px 38px 38px;
-  box-shadow:0 5px 22px rgba(0,0,0,.38),inset 0 -4px 10px rgba(0,0,0,.1);
-  animation:robotBob 3.2s ease-in-out infinite;
-  z-index:4;
-  overflow:visible;
-}
-/* Ears */
-.rb-ear{
-  position:absolute;top:22px;
-  width:20px;height:32px;border-radius:10px;
-  background:linear-gradient(160deg,#555,#222);
-  box-shadow:0 2px 8px rgba(0,0,0,.5);
-  z-index:3;
-}
+/* HEAD */
+.rb-head{position:absolute;left:50%;top:0;width:110px;height:88px;transform:translateX(-50%);background:white;border-radius:55px 55px 38px 38px;box-shadow:0 5px 22px rgba(0,0,0,.38),inset 0 -4px 10px rgba(0,0,0,.1);animation:robotBob 3.2s ease-in-out infinite;z-index:4;overflow:visible}
+.rb-ear{position:absolute;top:22px;width:20px;height:32px;border-radius:10px;background:linear-gradient(160deg,#555,#222);box-shadow:0 2px 8px rgba(0,0,0,.5);z-index:3}
 .rb-ear.l{left:-11px}.rb-ear.r{right:-11px}
-/* Antenna on head */
-.rb-ant{
-  position:absolute;left:50%;top:-20px;transform:translateX(-50%);
-  width:4px;height:20px;background:linear-gradient(180deg,#444,#666);border-radius:2px;
-  z-index:5;
-}
-.rb-ant-ball{
-  position:absolute;left:50%;top:-29px;transform:translateX(-50%);
-  width:12px;height:12px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,var(--yb),var(--yb3));
-  box-shadow:0 0 12px var(--yb),0 0 24px rgba(255,215,0,.5);
-  animation:antP 1.8s ease-in-out infinite;z-index:5;
-}
+.rb-ant{position:absolute;left:50%;top:-20px;transform:translateX(-50%);width:4px;height:20px;background:linear-gradient(180deg,#444,#666);border-radius:2px;z-index:5}
+.rb-ant-ball{position:absolute;left:50%;top:-29px;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--yb),var(--yb3));box-shadow:0 0 12px var(--yb),0 0 24px rgba(255,215,0,.5);animation:antP 1.8s ease-in-out infinite;z-index:5}
 @keyframes antP{0%,100%{box-shadow:0 0 10px var(--yb),0 0 22px rgba(255,215,0,.4);transform:translateX(-50%) scale(1)}50%{box-shadow:0 0 20px var(--yb),0 0 40px rgba(255,215,0,.7);transform:translateX(-50%) scale(1.28)}}
 
-/* ── VISOR — sits in upper-center of head ──
-   Head height = 88px
-   Visor: top:14px, height:46px → bottom edge at 60px
-   Mouth zone: 66px–80px (clear gap of 6px from visor bottom)
-*/
-.rb-visor{
-  position:absolute;
-  left:50%;top:14px;
-  transform:translateX(-50%);
-  width:74px;height:46px;
-  border-radius:13px;
-  background:#111;
-  border:2px solid #2a2a2a;
-  overflow:hidden;
-  box-shadow:inset 0 0 14px rgba(255,215,0,.06),0 0 0 1px rgba(255,255,255,.04);
-}
-
-/* Eyes inside visor — centered vertically in visor */
-.rb-eyes-row{
-  position:absolute;
-  left:0;right:0;
-  top:50%;transform:translateY(-56%);
-  display:flex;justify-content:center;align-items:center;
-  gap:14px;
-}
-.rb-pupil{
-  width:18px;height:18px;border-radius:50%;
-  background:white;
-  position:relative;
-  transition:all .25s cubic-bezier(.22,1,.36,1);
-  flex-shrink:0;
-}
-/* Black pupil dot */
-.rb-pupil::after{
-  content:'';width:8px;height:8px;border-radius:50%;
-  background:#111;
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  transition:transform .1s ease-out;
-}
-/* HEART */
+/* VISOR */
+.rb-visor{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:74px;height:46px;border-radius:13px;background:#111;border:2px solid #2a2a2a;overflow:hidden;box-shadow:inset 0 0 14px rgba(255,215,0,.06)}
+.rb-eyes-row{position:absolute;left:0;right:0;top:50%;transform:translateY(-56%);display:flex;justify-content:center;align-items:center;gap:14px}
+.rb-pupil{width:18px;height:18px;border-radius:50%;background:white;position:relative;transition:all .25s cubic-bezier(.22,1,.36,1);flex-shrink:0}
+.rb-pupil::after{content:'';width:8px;height:8px;border-radius:50%;background:#111;position:absolute;top:50%;left:50%;transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px)));transition:transform .1s ease-out}
 .rb-pupil.heart{background:transparent!important;width:20px;height:20px}
 .rb-pupil.heart::after{display:none}
 .rb-pupil.heart::before{content:'♥';color:#ff6b9d;font-size:17px;position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);line-height:1}
-/* SLEEPY */
 .rb-pupil.zzz{width:18px;height:4px!important;border-radius:2px;background:#ccc!important;margin-top:7px}
 .rb-pupil.zzz::after{display:none}
-/* ANGRY — half eye (bottom half visible) */
 .rb-pupil.angry{width:18px;height:18px;border-radius:50%;background:white;clip-path:polygon(0% 50%,100% 50%,100% 100%,0% 100%)}
-/* SAD — small drooped */
 .rb-pupil.sad{width:15px;height:15px;border-radius:50%;background:#aac8ff;margin-top:3px}
 .rb-pupil.sad::after{width:6px;height:6px}
-/* WINK (left eye = horizontal line, right = normal) */
 .rb-pupil.wink{width:18px;height:3px!important;border-radius:2px;background:white;margin-top:7px}
 .rb-pupil.wink::after{display:none}
-/* HAPPY — top arc */
 .rb-pupil.happy{width:18px;height:11px;border-radius:50% 50% 0 0;background:white}
 .rb-pupil.happy::after{width:6px;height:6px;top:40%}
 
-/* ── MOUTH — sits below visor, still inside head ──
-   Visor bottom ≈ top:60px
-   Mouth: top:68px → clear 8px gap
-*/
-.rb-mouth-zone{
-  position:absolute;
-  left:50%;top:66px;
-  transform:translateX(-50%);
-  width:60px;height:18px;
-  display:flex;align-items:center;justify-content:center;
-}
+/* MOUTH */
+.rb-mouth-zone{position:absolute;left:50%;top:66px;transform:translateX(-50%);width:60px;height:18px;display:flex;align-items:center;justify-content:center}
 .rb-mouth{transition:all .3s cubic-bezier(.22,1,.36,1)}
 .rb-mouth.smile{width:32px;height:13px;border:2.5px solid var(--yb);border-top:none;border-radius:0 0 16px 16px;box-shadow:0 0 7px var(--yb);display:block}
 .rb-mouth.frown{width:28px;height:11px;border:2.5px solid var(--yb);border-bottom:none;border-radius:14px 14px 0 0;box-shadow:0 0 7px var(--yb);display:block}
@@ -284,75 +205,33 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .rb-mouth.o{width:13px;height:13px;border-radius:50%;border:2px solid var(--yb);box-shadow:0 0 6px var(--yb);display:block}
 .rb-mouth.smirk{width:20px;height:8px;border:2px solid var(--yb);border-top:none;border-left:none;border-radius:0 0 9px 0;box-shadow:0 0 5px var(--yb);display:block}
 
-/* Speech bubble above head */
-.r-bubble{
-  position:absolute;top:-52px;left:50%;transform:translateX(-50%);
-  background:rgba(12,12,30,.97);border:1px solid rgba(108,99,255,.5);
-  border-radius:12px;padding:7px 13px;
-  font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--ab);
-  white-space:nowrap;max-width:220px;white-space:normal;text-align:center;
-  opacity:0;transition:opacity .35s;pointer-events:none;
-  box-shadow:0 0 20px rgba(108,99,255,.14);z-index:10;line-height:1.45;
-}
+/* SPEECH BUBBLE */
+.r-bubble{position:absolute;top:-52px;left:50%;transform:translateX(-50%);background:rgba(12,12,30,.97);border:1px solid rgba(108,99,255,.5);border-radius:12px;padding:7px 13px;font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--ab);white-space:normal;max-width:210px;text-align:center;opacity:0;transition:opacity .35s;pointer-events:none;box-shadow:0 0 18px rgba(108,99,255,.14);z-index:10;line-height:1.45}
 .r-bubble::after{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:12px;height:7px;background:rgba(12,12,30,.97);clip-path:polygon(0 0,100% 0,50% 100%)}
 .r-bubble.show{opacity:1}
 
-/* ── BODY ── */
-/* Body starts where head ends: head top=0, head height=88, gap body=8 → body top=96 */
-.rb-body{
-  position:absolute;
-  left:50%;top:96px;
-  width:98px;height:90px;
-  transform:translateX(-50%);
-  background:radial-gradient(ellipse at 50% 28%,var(--yb2) 0%,var(--yb) 38%,var(--yb3) 100%);
-  border-radius:50% 50% 44% 44% / 40% 40% 32% 32%;
-  box-shadow:0 8px 26px rgba(0,0,0,.45),inset 0 -8px 18px rgba(0,0,0,.22),inset 0 7px 14px rgba(255,255,255,.16);
-  animation:robotBob 3.2s ease-in-out infinite;
-  animation-delay:.1s;
-  z-index:3;
-}
+/* BODY */
+.rb-body{position:absolute;left:50%;top:96px;width:98px;height:90px;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 28%,var(--yb2) 0%,var(--yb) 38%,var(--yb3) 100%);border-radius:50% 50% 44% 44% / 40% 40% 32% 32%;box-shadow:0 8px 26px rgba(0,0,0,.45),inset 0 -8px 18px rgba(0,0,0,.22),inset 0 7px 14px rgba(255,255,255,.16);animation:robotBob 3.2s ease-in-out infinite;animation-delay:.1s;z-index:3}
 @keyframes robotBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-7px)}}
-
-/* Arms attached to body sides */
-.rb-arm{
-  position:absolute;top:10px;
-  width:16px;height:52px;border-radius:8px;
-  background:linear-gradient(180deg,#555,#222);
-  box-shadow:0 2px 8px rgba(0,0,0,.45);
-  transform-origin:top center;
-  z-index:2;
-}
+.rb-arm{position:absolute;top:10px;width:16px;height:52px;border-radius:8px;background:linear-gradient(180deg,#555,#222);box-shadow:0 2px 8px rgba(0,0,0,.45);transform-origin:top center;z-index:2}
 .rb-arm.l{left:-14px;animation:armW 2.8s ease-in-out infinite}
 .rb-arm.r{right:-14px;animation:armI 2.8s ease-in-out infinite}
 .rb-claw{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:15px;height:11px;background:#333;border-radius:4px;display:flex;gap:2px;align-items:flex-end;justify-content:center;padding-bottom:2px}
 .rb-claw::before,.rb-claw::after{content:'';width:4px;height:5px;background:#222;border-radius:2px 2px 0 0}
 @keyframes armW{0%,100%{transform:rotate(-14deg)}30%{transform:rotate(-40deg)}60%{transform:rotate(8deg)}}
 @keyframes armI{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-12deg)}}
-
-/* Legs */
-.rb-leg{
-  position:absolute;bottom:-18px;
-  width:22px;height:22px;border-radius:50%;
-  background:linear-gradient(160deg,#555,#222);
-  box-shadow:0 3px 8px rgba(0,0,0,.4);
-  animation:legB 1.6s ease-in-out infinite;
-}
+.rb-leg{position:absolute;bottom:-18px;width:22px;height:22px;border-radius:50%;background:linear-gradient(160deg,#555,#222);box-shadow:0 3px 8px rgba(0,0,0,.4);animation:legB 1.6s ease-in-out infinite}
 .rb-leg.l{left:14px;animation-delay:0s}.rb-leg.r{right:14px;animation-delay:.8s}
 @keyframes legB{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-
-/* Excited state */
 .robot-wrap.excited .rb-arm.l{animation:armW .42s ease-in-out infinite!important}
 .robot-wrap.excited .rb-ant-ball{background:radial-gradient(circle at 35% 35%,#ff6b9d,#ff1560)!important;animation:antP .45s ease-in-out infinite!important;box-shadow:0 0 18px #ff6b9d!important}
 
 /* ══ HERO ══ */
-#hero{background:transparent}
+#hero{background:transparent!important}
 #hero .si{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding-top:100px;padding-bottom:60px}
-
-/* Name row: text left, robot right, robot pushed lower */
 .hero-name-row{display:flex;align-items:flex-end;justify-content:space-between;gap:28px}
 .hero-text-col{flex:1;min-width:0}
-
-.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--neon);letter-spacing:.2em;text-transform:uppercase;padding:7px 16px;border-radius:100px;border:1px solid rgba(0,245,212,.25);background:rgba(0,245,212,.04);margin-bottom:20px;width:fit-content;animation:hup 1s .35s both}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--neon);letter-spacing:.2em;text-transform:uppercase;padding:7px 16px;border-radius:100px;border:1px solid rgba(0,245,212,.25);background:rgba(0,245,212,.06);margin-bottom:20px;width:fit-content;animation:hup 1s .35s both}
 .hbdot{width:6px;height:6px;border-radius:50%;background:var(--neon);animation:blink 1.5s infinite}
 .hero-eye{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;animation:hup 1s .5s both;min-height:1.1em}
 .hero-h1{font-family:'Orbitron',monospace;font-weight:900;line-height:.88;letter-spacing:-.03em;animation:hup 1s .65s both}
@@ -360,11 +239,9 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .hero-h1 .n2{display:block;font-size:clamp(2.6rem,8vw,7.8rem);background:linear-gradient(135deg,var(--ab) 0%,var(--neon) 50%,var(--neon2) 100%);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:hup 1s .65s both,gf 6s linear infinite;white-space:nowrap}
 @keyframes gf{0%{background-position:0% center}100%{background-position:300% center}}
 @keyframes hup{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
-
 .hero-sub{font-size:.95rem;color:var(--muted2);max-width:520px;line-height:1.85;margin:20px 0 34px;animation:hup 1s .82s both}
 .hero-sub strong{color:var(--text);font-weight:500}
 .hero-acts{display:flex;gap:12px;flex-wrap:wrap;animation:hup 1s .98s both}
-
 .btn{display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-radius:10px;padding:13px 26px;font-weight:500;transition:all .32s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.11),transparent);opacity:0;transition:opacity .3s}
 .btn:hover::before{opacity:1}
@@ -372,28 +249,24 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .btn-g:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 0 48px rgba(108,99,255,.58),0 8px 26px rgba(0,0,0,.5)}
 .btn-o{background:transparent;color:var(--muted2);border:1px solid var(--border2)}
 .btn-o:hover{border-color:var(--accent);color:var(--text);transform:translateY(-3px)}
-
 .hgrid{display:flex;gap:38px;flex-wrap:wrap;margin-top:44px;animation:hup 1s 1.15s both;padding-top:28px;border-top:1px solid var(--border2)}
 .inum{font-family:'Orbitron',monospace;font-size:2.1rem;font-weight:700;background:linear-gradient(135deg,var(--ab),var(--neon));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
 .ilbl{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-top:5px}
-
 .scind{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;animation:hup 1s 1.4s both}
 .scmouse{width:22px;height:34px;border:1.5px solid var(--muted);border-radius:11px;position:relative}
 .scmouse::before{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:3px;height:5px;background:var(--neon);border-radius:2px;animation:sw 2s ease-in-out infinite}
 @keyframes sw{0%{top:5px;opacity:1}100%{top:20px;opacity:0}}
-
-.orb{position:absolute;border-radius:50%;filter:blur(82px);pointer-events:none;will-change:transform}
-.orb1{width:620px;height:620px;background:radial-gradient(circle,rgba(108,99,255,.16),transparent 70%);top:-12%;left:-8%}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;will-change:transform}
+.orb1{width:620px;height:620px;background:radial-gradient(circle,rgba(108,99,255,.15),transparent 70%);top:-12%;left:-8%}
 .orb2{width:460px;height:460px;background:radial-gradient(circle,rgba(0,245,212,.1),transparent 70%);bottom:0;right:-4%}
 .orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(255,77,109,.08),transparent 70%);top:35%;left:58%}
 
 /* ══ ABOUT ══ */
-#about{background:transparent}
-.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:start;margin-top:40px}
+#about .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:start;margin-top:40px}
 .about-text p{color:var(--muted2);font-size:.94rem;line-height:1.9;margin-bottom:16px}
 .about-text strong{color:var(--text);font-weight:500}
 .term-wrap{position:sticky;top:100px}
-.terminal{background:rgba(8,8,24,.92);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 0 50px rgba(108,99,255,.07),0 24px 55px rgba(0,0,0,.5);backdrop-filter:blur(18px)}
+.terminal{border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 0 50px rgba(108,99,255,.07),0 24px 55px rgba(0,0,0,.5)}
 .tbar{background:rgba(255,255,255,.04);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border2)}
 .td{width:10px;height:10px;border-radius:50%}.td.r{background:#ff5f57}.td.y{background:#febc2e}.td.g{background:#28c840}
 .ttitle{font-family:'JetBrains Mono',monospace;font-size:.59rem;color:var(--muted);letter-spacing:.1em;margin-left:auto}
@@ -404,7 +277,6 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .tcur{display:inline-block;width:8px;height:14px;background:var(--neon);animation:blink 1s infinite;vertical-align:middle}
 
 /* ══ SKILLS ══ */
-#skills{background:transparent}
 .skills-layout{display:grid;grid-template-columns:1fr 1fr;gap:50px;margin-top:40px;align-items:start}
 .bars-title{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--neon);letter-spacing:.22em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .bars-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,245,212,.3),transparent)}
@@ -417,27 +289,26 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .bar-fill::after{content:'';position:absolute;right:-1px;top:-3px;width:11px;height:11px;background:var(--neon);border-radius:50%;box-shadow:0 0 10px var(--neon);transform:scale(0);transition:transform 1.4s cubic-bezier(.22,1,.36,1)}
 .bar-fill.fired::after{transform:scale(1)}
 .tag-cols{display:flex;flex-direction:column;gap:11px}
-.tcat{background:rgba(10,10,26,.88);border:1px solid var(--border2);border-radius:11px;padding:15px;position:relative;overflow:hidden;transition:border-color .3s,transform .38s cubic-bezier(.22,1,.36,1);backdrop-filter:blur(14px)}
+.tcat{border:1px solid var(--border2);border-radius:11px;padding:15px;position:relative;overflow:hidden;transition:border-color .3s,transform .38s cubic-bezier(.22,1,.36,1)}
 .tcat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),var(--neon));transform:scaleY(0);transform-origin:top;transition:transform .38s cubic-bezier(.22,1,.36,1)}
 .tcat:hover{border-color:rgba(108,99,255,.3);transform:translateX(4px)}.tcat:hover::before{transform:scaleY(1)}
 .tcat-label{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--neon);letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px}
 .tag-list{display:flex;flex-wrap:wrap;gap:6px}
-.stag{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:5px 12px;border-radius:7px;background:rgba(16,16,38,.88);border:1px solid var(--border2);color:var(--muted2);transition:all .26s cubic-bezier(.22,1,.36,1);cursor:default}
+.stag{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:5px 12px;border-radius:7px;background:rgba(16,16,38,.85);border:1px solid var(--border2);color:var(--muted2);transition:all .26s cubic-bezier(.22,1,.36,1);cursor:default}
 .stag:hover{transform:translateY(-2px) scale(1.04);border-color:var(--accent);color:var(--text);box-shadow:0 4px 14px rgba(108,99,255,.17)}
 .stag.pro{color:var(--neon);border-color:rgba(0,245,212,.22)}.stag.mid{color:var(--ab);border-color:rgba(155,149,255,.22)}
 .hex-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:34px}
 .hex-node{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:default}
-.hex-shape{width:54px;height:54px;background:rgba(12,12,30,.88);border:1px solid var(--border2);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.hex-shape{width:54px;height:54px;background:rgba(12,12,30,.85);border:1px solid var(--border2);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .3s cubic-bezier(.22,1,.36,1)}
 .hex-node:hover .hex-shape{background:rgba(108,99,255,.15);border-color:var(--accent);transform:scale(1.13);box-shadow:0 0 18px rgba(108,99,255,.28)}
 .hex-lbl{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted2);letter-spacing:.07em;text-transform:uppercase;text-align:center}
 .hex-node:hover .hex-lbl{color:var(--ab)}
 
 /* ══ PROJECTS ══ */
-#projects{background:transparent}
 .ptop{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px}
 .pcnt{font-family:'Orbitron',monospace;font-size:4.5rem;font-weight:900;color:rgba(108,99,255,.05);line-height:1;user-select:none}
 .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-.pcard{background:rgba(9,9,22,.85);border:1px solid var(--border2);border-radius:17px;padding:23px;position:relative;overflow:hidden;transition:border-color .4s,transform .48s cubic-bezier(.22,1,.36,1),box-shadow .4s;cursor:pointer;backdrop-filter:blur(16px)}
+.pcard{border:1px solid var(--border2);border-radius:17px;padding:23px;position:relative;overflow:hidden;transition:border-color .4s,transform .48s cubic-bezier(.22,1,.36,1),box-shadow .4s;cursor:pointer}
 .pcard::before{content:'';position:absolute;width:260px;height:260px;background:radial-gradient(circle,rgba(108,99,255,.14) 0%,transparent 70%);left:var(--sx,-130px);top:var(--sy,-130px);transform:translate(-50%,-50%);pointer-events:none;opacity:0;transition:opacity .3s;border-radius:50%}
 .pcard::after{content:'';position:absolute;inset:0;border-radius:17px;background:linear-gradient(135deg,rgba(108,99,255,.06),transparent 55%);opacity:0;transition:opacity .4s}
 .pcard:hover{transform:translateY(-7px);border-color:rgba(108,99,255,.35);box-shadow:0 24px 62px rgba(0,0,0,.55),0 0 50px rgba(108,99,255,.06)}
@@ -459,17 +330,15 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .pcard:hover .pbtn{background:var(--accent);border-color:var(--accent);color:#fff;transform:rotate(45deg)}
 
 /* ══ ACHIEVEMENTS ══ */
-#achievements{background:transparent}
 .ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:40px}
-.ach-card{background:rgba(9,9,22,.85);border:1px solid var(--border2);border-radius:17px;padding:25px;position:relative;overflow:hidden;transition:transform .4s cubic-bezier(.22,1,.36,1),border-color .4s,box-shadow .4s;backdrop-filter:blur(14px)}
+.ach-card{border:1px solid var(--border2);border-radius:17px;padding:25px;position:relative;overflow:hidden;transition:transform .4s cubic-bezier(.22,1,.36,1),border-color .4s,box-shadow .4s}
 .ach-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .5s ease}
 .ach-card:hover{transform:translateY(-7px);border-color:rgba(255,209,102,.22);box-shadow:0 20px 54px rgba(0,0,0,.45)}.ach-card:hover::before{transform:scaleX(1)}
 .acm{font-size:2.2rem;margin-bottom:12px;display:block}.act{font-family:'Orbitron',monospace;font-size:.86rem;font-weight:700;margin-bottom:6px;line-height:1.3}.aco{font-family:'JetBrains Mono',monospace;font-size:.59rem;color:var(--gold);letter-spacing:.1em;margin-bottom:8px}.acd{color:var(--muted2);font-size:.78rem;line-height:1.65}
 
 /* ══ CERTIFICATIONS ══ */
-#certifications{background:transparent}
 .cert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:40px}
-.cert-card{background:rgba(9,9,22,.85);border:1px solid var(--border2);border-radius:15px;padding:20px;display:flex;flex-direction:column;gap:11px;transition:transform .4s cubic-bezier(.22,1,.36,1),border-color .4s;position:relative;overflow:hidden;backdrop-filter:blur(14px)}
+.cert-card{border:1px solid var(--border2);border-radius:15px;padding:20px;display:flex;flex-direction:column;gap:11px;transition:transform .4s cubic-bezier(.22,1,.36,1),border-color .4s;position:relative;overflow:hidden}
 .cert-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--neon));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
 .cert-glow{position:absolute;bottom:0;left:0;right:0;height:52px;background:linear-gradient(0deg,rgba(108,99,255,.06),transparent);pointer-events:none}
 .cert-card:hover{transform:translateY(-5px);border-color:rgba(108,99,255,.32)}.cert-card:hover::after{transform:scaleX(1)}
@@ -480,7 +349,6 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .cbadge{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:.53rem;color:var(--neon);padding:4px 9px;border-radius:5px;border:1px solid rgba(0,245,212,.2);background:rgba(0,245,212,.04);width:fit-content}
 
 /* ══ EDUCATION ══ */
-#education{background:transparent}
 .edu-tl{margin-top:44px;position:relative;padding-left:36px}
 .edu-tl::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:1px;background:linear-gradient(180deg,var(--accent),rgba(108,99,255,.05))}
 .edu-item{position:relative;margin-bottom:46px}.edu-item:last-child{margin-bottom:0}
@@ -491,9 +359,8 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .edu-grade{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--neon);padding:5px 12px;border-radius:7px;background:rgba(0,245,212,.05);border:1px solid rgba(0,245,212,.15)}
 
 /* ══ FUN ══ */
-#fun{background:transparent}
 .fun-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:40px}
-.fun-card{background:rgba(9,9,22,.85);border:1px solid var(--border2);border-radius:15px;padding:18px 15px;position:relative;overflow:hidden;transition:transform .38s cubic-bezier(.22,1,.36,1),border-color .38s,box-shadow .38s;cursor:default;display:flex;flex-direction:column;gap:8px;backdrop-filter:blur(14px)}
+.fun-card{border:1px solid var(--border2);border-radius:15px;padding:18px 15px;position:relative;overflow:hidden;transition:transform .38s cubic-bezier(.22,1,.36,1),border-color .38s,box-shadow .38s;cursor:default;display:flex;flex-direction:column;gap:8px}
 .fun-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .38s;border-radius:15px}
 .fun-card:hover{transform:translateY(-5px) scale(1.01)}.fun-card:hover::before{opacity:1}
 .fc1{border-color:rgba(0,245,212,.09)}.fc1::before{background:linear-gradient(135deg,rgba(0,245,212,.05),transparent)}.fc1:hover{border-color:rgba(0,245,212,.3);box-shadow:0 14px 40px rgba(0,0,0,.38)}
@@ -506,65 +373,82 @@ body.hov #cring{width:58px;height:58px;border-color:var(--neon2)}
 .fc8{border-color:rgba(122,184,255,.09)}.fc8::before{background:linear-gradient(135deg,rgba(122,184,255,.05),transparent)}.fc8:hover{border-color:rgba(122,184,255,.3);box-shadow:0 14px 40px rgba(0,0,0,.38)}
 .fun-icon{font-size:1.65rem;line-height:1}.fun-title{font-family:'Orbitron',monospace;font-size:.76rem;font-weight:700;color:var(--text)}.fun-desc{font-family:'Space Grotesk',sans-serif;font-size:.75rem;color:var(--muted2);line-height:1.55}.fun-quip{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);font-style:italic;line-height:1.45;padding-top:7px;border-top:1px solid var(--border2)}
 
-/* ══ CONTACT ══ */
-#contact{background:transparent;text-align:center}
-.cin{max-width:700px;margin:0 auto}
+/* ══ CONTACT — mouse color interaction ══ */
+#contact{background:transparent!important;text-align:center;position:relative;overflow:hidden}
+/* Dynamic mouse-color orb behind contact */
+#contact-orb{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  transition:background .12s ease-out;
+}
+.cin{max-width:700px;margin:0 auto;position:relative;z-index:1}
 .ch{font-family:'Orbitron',monospace;font-size:clamp(1.9rem,4.8vw,4.4rem);font-weight:900;line-height:1;letter-spacing:-.02em;margin-bottom:18px}
 .ch .cg{background:linear-gradient(135deg,var(--ab),var(--neon));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .csub2{color:var(--muted2);font-size:.93rem;margin-bottom:34px;line-height:1.75}
 .cacts{display:flex;justify-content:center;gap:11px;flex-wrap:wrap}
-.clink{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted2);text-decoration:none;background:rgba(9,9,22,.88);border:1px solid var(--border2);padding:13px 22px;border-radius:11px;transition:all .3s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;backdrop-filter:blur(14px)}
+.clink{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--muted2);text-decoration:none;
+  background:rgba(9,9,22,.82);border:1px solid var(--border2);
+  padding:13px 22px;border-radius:11px;
+  transition:all .3s cubic-bezier(.22,1,.36,1);
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(18px);
+}
 .clink::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(108,99,255,.08),transparent);opacity:0;transition:opacity .3s}
 .clink:hover{color:var(--text);border-color:var(--accent);transform:translateY(-4px);box-shadow:0 12px 32px rgba(108,99,255,.13)}.clink:hover::before{opacity:1}
 .locbadge{display:inline-flex;align-items:center;gap:7px;margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.12em;justify-content:center}
 .ldot{width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon);animation:blink 2s infinite}
 
-footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justify-content:space-between;align-items:center;background:rgba(5,5,16,.92);position:relative;z-index:2;backdrop-filter:blur(22px)}
+/* Contact letter glow on hover */
+.ch-letter{display:inline-block;transition:color .2s,text-shadow .2s}
+
+footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justify-content:space-between;align-items:center;background:rgba(4,4,14,.88);position:relative;z-index:2;backdrop-filter:blur(22px)}
 .fl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:.1em}
 .fr{display:flex;gap:18px}.fr a{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);text-decoration:none;letter-spacing:.1em;transition:color .3s}.fr a:hover{color:var(--neon)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--neon));border-radius:2px}
 
 @media(max-width:1100px){
-  .about-grid,.skills-layout{grid-template-columns:1fr;gap:40px}
+  #about .about-grid,.skills-layout{grid-template-columns:1fr;gap:40px}
   .bento{grid-template-columns:1fr 1fr}.p1,.p2,.p3{grid-column:span 1}.p4,.p5{grid-column:span 2}
-  .fun-grid{grid-template-columns:repeat(2,1fr)}
-  .hero-name-row{flex-wrap:wrap}
+  .fun-grid{grid-template-columns:repeat(2,1fr)}.hero-name-row{flex-wrap:wrap}
 }
 @media(max-width:900px){
   .si,.ss.tall .si{padding-left:22px;padding-right:22px}
   #nav{padding:15px 22px}.nav-links{display:none}.nav-ham{display:flex}
   .ach-grid{grid-template-columns:1fr}.cert-grid{grid-template-columns:1fr 1fr}
   footer{flex-direction:column;gap:12px;padding:18px 22px;text-align:center}
-  .hgrid{gap:18px}
-  .robot-wrap{width:160px}
-  .rb-head{width:90px;height:72px}.rb-visor{width:60px;height:38px;top:12px}.rb-mouth-zone{top:55px}
-  .rb-body{width:80px;height:74px;top:80px}
+  .hgrid{gap:18px}.robot-wrap{width:160px}
 }
 @media(max-width:640px){
   .bento{grid-template-columns:1fr}.p1,.p2,.p3,.p4,.p5{grid-column:span 1}
   .cert-grid,.fun-grid{grid-template-columns:1fr}
   .hero-h1 .n1,.hero-h1 .n2{font-size:clamp(2.2rem,12vw,4rem)}
-  .robot-wrap{display:none}.wd{height:52px}
+  .robot-wrap{display:none}.wd{height:50px}
 }
 </style>
 </head>
 <body>
 
-<!-- Fixed background layers -->
+<!-- ═══ FIXED BACKGROUND LAYERS ═══ -->
 <div id="bg-base"></div>
-<canvas id="starfield"></canvas>
+<canvas id="stars-deep"></canvas>
+<canvas id="stars-mid"></canvas>
+<canvas id="stars-close"></canvas>
 <canvas id="nebula"></canvas>
 <div id="gridlines"></div>
+<div id="vignette"></div>
+<div id="mouse-glow"></div>
 
-<!-- UI layers -->
+<!-- UI -->
 <div id="cdot"></div>
 <div id="cring"></div>
 <div id="ctrail"></div>
 <div id="pbar"></div>
 
-<!-- Chat panel — lives outside robot-wrap, positioned via JS -->
+<!-- Chat panel outside robot -->
 <div id="robot-chat-panel">
-  <div class="chat-header">DH-Bot v2.0 // chatting</div>
+  <div class="chat-header" id="chat-header">DH-Bot v2.0</div>
   <div id="chat-content"></div>
   <button class="chat-close" id="chat-close">✕</button>
 </div>
@@ -589,13 +473,12 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
 
 <!-- ════ HERO ════ -->
 <section class="ss tall" id="hero">
-  <div class="orb orb1" data-plx="0.12"></div>
-  <div class="orb orb2" data-plx="-0.08"></div>
-  <div class="orb orb3" data-plx="0.16"></div>
+  <div class="orb orb1" data-plx="0.14"></div>
+  <div class="orb orb2" data-plx="-0.09"></div>
+  <div class="orb orb3" data-plx="0.18"></div>
   <div class="si">
     <div class="hero-badge"><div class="hbdot"></div>Available for opportunities</div>
     <div class="hero-eye">// dharmesh.raj — software engineer</div>
-
     <div class="hero-name-row">
       <div class="hero-text-col">
         <h1 class="hero-h1">
@@ -603,43 +486,29 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
           <span class="n2">RAJ</span>
         </h1>
       </div>
-
-      <!-- ROBOT — pushed lower, right side -->
+      <!-- ROBOT — align-self:flex-end + padding-top pushes it DOWN, aligned with name bottom -->
       <div class="robot-wrap" id="robot">
-        <!-- Speech bubble above head -->
         <div class="r-bubble" id="rbubble">Hey! Click me 👋</div>
-
         <div class="robot-scene" id="robotScene">
-          <!-- HEAD (top of scene) -->
           <div class="rb-head" id="rbHead">
-            <div class="rb-ear l"></div>
-            <div class="rb-ear r"></div>
-            <div class="rb-ant"></div>
-            <div class="rb-ant-ball"></div>
-            <!-- VISOR: eyes inside, strictly clipped -->
+            <div class="rb-ear l"></div><div class="rb-ear r"></div>
+            <div class="rb-ant"></div><div class="rb-ant-ball"></div>
             <div class="rb-visor">
               <div class="rb-eyes-row">
                 <div class="rb-pupil" id="pupL"></div>
                 <div class="rb-pupil" id="pupR"></div>
               </div>
             </div>
-            <!-- MOUTH zone: below visor, inside head, no overflow -->
-            <div class="rb-mouth-zone">
-              <div class="rb-mouth smile" id="rbMouth"></div>
-            </div>
+            <div class="rb-mouth-zone"><div class="rb-mouth smile" id="rbMouth"></div></div>
           </div>
-
-          <!-- BODY (below head with gap) -->
           <div class="rb-body" id="rbBody">
             <div class="rb-arm l"><div class="rb-claw"></div></div>
             <div class="rb-arm r"><div class="rb-claw"></div></div>
-            <div class="rb-leg l"></div>
-            <div class="rb-leg r"></div>
+            <div class="rb-leg l"></div><div class="rb-leg r"></div>
           </div>
         </div>
       </div>
-    </div><!-- end hero-name-row -->
-
+    </div>
     <p class="hero-sub"><strong>Java · Python · Full-Stack Engineer</strong> — building scalable applications, AI-assisted solutions, and real-world software that makes a genuine difference. Based in Bhubaneswar, Odisha.</p>
     <div class="hero-acts">
       <a href="#projects" class="btn btn-g">View Projects ↗</a>
@@ -654,11 +523,10 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
   </div>
   <div class="scind"><div class="scmouse"></div><span>Scroll</span></div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
 <!-- ════ ABOUT ════ -->
-<section class="ss glass-panel tint-a" id="about">
+<section class="ss" id="about">
   <div class="si">
     <div class="lbl rv">About</div>
     <h2 class="stitle rv">Engineer &amp; Problem Solver</h2>
@@ -694,11 +562,10 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
     </div>
   </div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
 <!-- ════ SKILLS ════ -->
-<section class="ss glass-panel tint-b" id="skills">
+<section class="ss" id="skills">
   <div class="si">
     <div class="lbl rv">Capabilities</div>
     <h2 class="stitle rv">Technical Skills</h2>
@@ -737,27 +604,25 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
     </div>
   </div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
 <!-- ════ PROJECTS ════ -->
-<section class="ss glass-panel tint-a" id="projects">
+<section class="ss" id="projects">
   <div class="si">
     <div class="ptop"><div><div class="lbl rv">Selected Work</div><h2 class="stitle rv">Projects</h2></div><div class="pcnt rv">05</div></div>
     <div class="bento">
-      <div class="pcard p1 rv" style="transition-delay:.05s"><div class="pnum">01</div><div class="pico ico-r">🍳</div><div class="ptitle">You Chef</div><div class="pdesc">Recipe discovery platform powered by a live REST API. Browse thousands of dishes, filter by cuisine, and explore instructions with nutritional data.</div><div class="ptags"><span class="pt html">HTML</span><span class="pt css">CSS</span><span class="pt rest">REST API</span></div><div class="pfooter"><span class="pstat">Recipe Discovery</span><div class="pbtn">↗</div></div></div>
-      <div class="pcard p2 rv" style="transition-delay:.1s"><div class="pnum">02</div><div class="pico ico-m">🎬</div><div class="ptitle">My Movies</div><div class="pdesc">Sleek movie search app powered by GraphQL. Explore cast, ratings and curate watchlists within a React + Tailwind interface.</div><div class="ptags"><span class="pt react">React</span><span class="pt tw">Tailwind</span><span class="pt gql">GraphQL</span></div><div class="pfooter"><span class="pstat">Movie Search & Discovery</span><div class="pbtn">↗</div></div></div>
-      <div class="pcard p3 rv" style="transition-delay:.15s"><div class="pnum">03</div><div class="pico ico-n">🧭</div><div class="ptitle">Yatra 360</div><div class="pdesc">AI-powered indoor navigation using CBIR. 85% accuracy with a voice-guided accessibility-first interface. Presented at university tech exhibition.</div><div class="ptags"><span class="pt py">Python</span><span class="pt cv">OpenCV</span><span class="pt flask">Flask</span></div><div class="pfooter"><span class="pstat">85% CBIR Accuracy</span><div class="pbtn">↗</div></div></div>
-      <div class="pcard p4 rv" style="transition-delay:.2s"><div class="pnum">04</div><div class="pico ico-s">🛡️</div><div class="ptitle">Sentinex — Community Safety App</div><div class="pdesc">Real-time incident reporting with geofencing for campus security. Firebase backend serves 500+ active users with push notifications — reducing emergency response time by 30%. Awarded "Best Social Impact Project" at ITER Tech Symposium 2023.</div><div class="ptags"><span class="pt java">Java</span><span class="pt and">Android SDK</span><span class="pt fire">Firebase</span></div><div class="pfooter"><span class="pstat">🏆 Best Social Impact · 500+ Users · −30% Response Time</span><div class="pbtn">↗</div></div></div>
-      <div class="pcard p5 rv" style="transition-delay:.25s"><div class="pnum">05</div><div class="pico ico-mu">🎵</div><div class="ptitle">DhunConnects</div><div class="pdesc">Music social platform connecting people through shared listening preferences and mood-based recommendations. 1000+ daily API requests via Supabase. Featured in department newsletter.</div><div class="ptags"><span class="pt react">React.js</span><span class="pt supa">Supabase</span></div><div class="pfooter"><span class="pstat">1000+ Daily API Requests</span><div class="pbtn">↗</div></div></div>
+      <div class="pcard p1 rv" style="transition-delay:.05s"><div class="pnum">01</div><div class="pico ico-r">🍳</div><div class="ptitle">You Chef</div><div class="pdesc">Recipe discovery platform powered by a live REST API. Browse thousands of dishes, filter by cuisine, explore instructions with nutritional data.</div><div class="ptags"><span class="pt html">HTML</span><span class="pt css">CSS</span><span class="pt rest">REST API</span></div><div class="pfooter"><span class="pstat">Recipe Discovery</span><div class="pbtn">↗</div></div></div>
+      <div class="pcard p2 rv" style="transition-delay:.1s"><div class="pnum">02</div><div class="pico ico-m">🎬</div><div class="ptitle">My Movies</div><div class="pdesc">Sleek movie search powered by GraphQL. Explore cast, ratings and curate watchlists in a React + Tailwind interface.</div><div class="ptags"><span class="pt react">React</span><span class="pt tw">Tailwind</span><span class="pt gql">GraphQL</span></div><div class="pfooter"><span class="pstat">Movie Search & Discovery</span><div class="pbtn">↗</div></div></div>
+      <div class="pcard p3 rv" style="transition-delay:.15s"><div class="pnum">03</div><div class="pico ico-n">🧭</div><div class="ptitle">Yatra 360</div><div class="pdesc">AI-powered indoor navigation using CBIR. 85% accuracy with voice-guided accessibility interface. Presented at university tech exhibition.</div><div class="ptags"><span class="pt py">Python</span><span class="pt cv">OpenCV</span><span class="pt flask">Flask</span></div><div class="pfooter"><span class="pstat">85% CBIR Accuracy</span><div class="pbtn">↗</div></div></div>
+      <div class="pcard p4 rv" style="transition-delay:.2s"><div class="pnum">04</div><div class="pico ico-s">🛡️</div><div class="ptitle">Sentinex — Community Safety App</div><div class="pdesc">Real-time incident reporting with geofencing for campus security. Firebase backend serves 500+ active users — reducing emergency response time by 30%. Awarded "Best Social Impact Project" at ITER Tech Symposium 2023.</div><div class="ptags"><span class="pt java">Java</span><span class="pt and">Android SDK</span><span class="pt fire">Firebase</span></div><div class="pfooter"><span class="pstat">🏆 Best Social Impact · 500+ Users · −30% Response Time</span><div class="pbtn">↗</div></div></div>
+      <div class="pcard p5 rv" style="transition-delay:.25s"><div class="pnum">05</div><div class="pico ico-mu">🎵</div><div class="ptitle">DhunConnects</div><div class="pdesc">Music social platform connecting people through shared listening and mood-based recommendations. 1000+ daily API requests via Supabase. Featured in department newsletter.</div><div class="ptags"><span class="pt react">React.js</span><span class="pt supa">Supabase</span></div><div class="pfooter"><span class="pstat">1000+ Daily API Requests</span><div class="pbtn">↗</div></div></div>
     </div>
   </div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
 <!-- ════ ACHIEVEMENTS ════ -->
-<section class="ss glass-panel tint-b" id="achievements">
+<section class="ss" id="achievements">
   <div class="si">
     <div class="lbl rv">Recognition</div><h2 class="stitle rv">Achievements</h2>
     <div class="ach-grid">
@@ -767,11 +632,10 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
     </div>
   </div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
 <!-- ════ CERTIFICATIONS ════ -->
-<section class="ss glass-panel tint-a" id="certifications">
+<section class="ss" id="certifications">
   <div class="si">
     <div class="lbl rv">Credentials</div><h2 class="stitle rv">Certifications &amp; Professional Development</h2>
     <div class="cert-grid">
@@ -784,11 +648,10 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
     </div>
   </div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
 <!-- ════ EDUCATION ════ -->
-<section class="ss glass-panel tint-b" id="education">
+<section class="ss" id="education">
   <div class="si">
     <div class="lbl rv">Background</div><h2 class="stitle rv">Education</h2>
     <div class="edu-tl">
@@ -807,35 +670,38 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
     </div>
   </div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
-<!-- ════ BEYOND CODE — after education ════ -->
-<section class="ss glass-panel tint-a" id="fun">
+<!-- ════ BEYOND CODE ════ -->
+<section class="ss" id="fun">
   <div class="si">
     <div class="lbl rv">Beyond Code</div>
     <h2 class="stitle rv">Life.exe <span style="font-size:.55em;color:var(--neon)">// not just a dev</span></h2>
     <div class="fun-grid">
       <div class="fun-card fc1 rv" style="transition-delay:.04s"><div class="fun-icon">🏋️</div><div class="fun-title">Fitness Enthusiast</div><div class="fun-desc">Gym is therapy. Hits PRs before hitting deploy. Believes "one more rep" and "one more commit" are basically the same thing.</div><div class="fun-quip">"My code compiles. My muscles compile. Everything is fine." 💪</div></div>
       <div class="fun-card fc2 rv" style="transition-delay:.08s"><div class="fun-icon">🎨</div><div class="fun-title">Painter</div><div class="fun-desc">Picks up a brush when debugging gets too existential. Mostly abstract — code-induced anxiety makes surprisingly good art.</div><div class="fun-quip">"The canvas never throws a NullPointerException." 🖌️</div></div>
-      <div class="fun-card fc3 rv" style="transition-delay:.12s"><div class="fun-icon">🧘</div><div class="fun-title">Meditates & Yoga</div><div class="fun-desc">Because someone has to stay calm when production is down at 2am. Meditation helps. Yoga helps more. Coffee helps most.</div><div class="fun-quip">"Inner peace achieved. Stack trace: still unresolved." 🕉️</div></div>
+      <div class="fun-card fc3 rv" style="transition-delay:.12s"><div class="fun-icon">🧘</div><div class="fun-title">Meditates & Yoga</div><div class="fun-desc">Because someone has to stay calm when production is down at 2am. Meditation helps. Yoga more. Coffee most.</div><div class="fun-quip">"Inner peace achieved. Stack trace: still unresolved." 🕉️</div></div>
       <div class="fun-card fc4 rv" style="transition-delay:.16s"><div class="fun-icon">🎸</div><div class="fun-title">Guitar (Beginner)</div><div class="fun-desc">4 chords, infinite ambition. G, C, D, Em — the holy quartet. Fingers hurt, neighbours hurt, we suffer together.</div><div class="fun-quip">"One day I'll play something. Today is not that day." 🎵</div></div>
       <div class="fun-card fc5 rv" style="transition-delay:.2s"><div class="fun-icon">♟️</div><div class="fun-title">Chess Club Founder</div><div class="fun-desc">Co-founded the chess club at ITER. Convinced an entire college that staring silently at a board is peak entertainment.</div><div class="fun-quip">"Chess is algorithm design with more passive aggression." ♟️</div></div>
       <div class="fun-card fc6 rv" style="transition-delay:.24s"><div class="fun-icon">😂</div><div class="fun-title">Meme Reference Lover</div><div class="fun-desc">Communicates 40% in code, 60% in memes. Variable names have included "bigBrainEnergy". No regrets whatsoever.</div><div class="fun-quip">"This codebase is fine. Everything is fine. 🐶☕🔥"</div></div>
-      <div class="fun-card fc7 rv" style="transition-delay:.28s"><div class="fun-icon">🙄</div><div class="fun-title">Certified Sarcastic</div><div class="fun-desc">Uses sarcasm as a coping mechanism AND a debugging tool. "Oh great, undefined variable" has solved more bugs than docs.</div><div class="fun-quip">"Sure, let me fix that in production. What could go wrong." 🙃</div></div>
+      <div class="fun-card fc7 rv" style="transition-delay:.28s"><div class="fun-icon">🙄</div><div class="fun-title">Certified Sarcastic</div><div class="fun-desc">Uses sarcasm as a coping mechanism AND a debugging tool. "Oh great, undefined variable" solved more bugs than docs.</div><div class="fun-quip">"Sure, let me fix that in production. What could go wrong." 🙃</div></div>
       <div class="fun-card fc8 rv" style="transition-delay:.32s"><div class="fun-icon">🌅</div><div class="fun-title">Sunrise Coder</div><div class="fun-desc">Best ideas hit at 6am or 11:58pm. Powered by discipline, caffeine, and the faint fear of unfinished to-do lists.</div><div class="fun-quip">"Sleep is just a git stash. I'll pop it later." 😴</div></div>
     </div>
   </div>
 </section>
-
 <div class="wd"><div class="wr"></div><div class="wr"></div><div class="wr"></div></div>
 
-<!-- ════ CONTACT ════ -->
-<section class="ss glass-panel tint-b" id="contact">
+<!-- ════ CONTACT — mouse color interaction ════ -->
+<section class="ss" id="contact">
+  <div id="contact-orb"></div>
   <div class="si">
     <div class="cin">
       <div class="lbl rv" style="justify-content:center">Contact</div>
-      <h2 class="ch rv">Let's Build<br><span class="cg">Something</span><br>Together</h2>
+      <h2 class="ch rv" id="contact-title">
+        <span class="ch-letter">L</span><span class="ch-letter">e</span><span class="ch-letter">t</span><span class="ch-letter">'</span><span class="ch-letter">s</span> <span class="ch-letter">B</span><span class="ch-letter">u</span><span class="ch-letter">i</span><span class="ch-letter">l</span><span class="ch-letter">d</span><br>
+        <span class="ch-letter cg">S</span><span class="ch-letter cg">o</span><span class="ch-letter cg">m</span><span class="ch-letter cg">e</span><span class="ch-letter cg">t</span><span class="ch-letter cg">h</span><span class="ch-letter cg">i</span><span class="ch-letter cg">n</span><span class="ch-letter cg">g</span><br>
+        <span class="ch-letter">T</span><span class="ch-letter">o</span><span class="ch-letter">g</span><span class="ch-letter">e</span><span class="ch-letter">t</span><span class="ch-letter">h</span><span class="ch-letter">e</span><span class="ch-letter">r</span>
+      </h2>
       <p class="csub2 rv">Open to full-time roles, internships, and exciting collaborations.</p>
       <div class="cacts rv">
         <a href="mailto:rajdharmesh666@gmail.com" class="clink">📧 rajdharmesh666@gmail.com</a>
@@ -846,7 +712,7 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
     </div>
   </div>
 </section>
-</div><!-- end .pw -->
+</div>
 
 <footer>
   <div class="fl">© 2025 Dharmesh Raj — All rights reserved</div>
@@ -854,115 +720,220 @@ footer{border-top:1px solid var(--border2);padding:20px 80px;display:flex;justif
 </footer>
 
 <script>
-/* ══ STARFIELD ══ */
-(function(){
-  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+/* ══ THREE-LAYER STARFIELD ══ */
+function makeStarfield(id, count, minR, maxR, speed, baseOp, drift){
+  const c=document.getElementById(id), ctx=c.getContext('2d');
   let W,H,stars=[],SY=0;
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
-  function init(){stars=[];for(let i=0;i<420;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.14,op:Math.random()*.72+.1,ts:Math.random()*.02+.004,tp:Math.random()*Math.PI*2,vx:(Math.random()-.5)*.008,vy:(Math.random()-.5)*.008,col:['#fff','#c8c8ff','#aaffee','#ffeebb','#ffccdd'][Math.floor(Math.random()*5)]})}
-  function draw(){ctx.clearRect(0,0,W,H);const po=SY*.05;stars.forEach(s=>{s.tp+=s.ts;s.x+=s.vx;s.y+=s.vy;if(s.x<0)s.x=W;if(s.x>W)s.x=0;const py=((s.y-po%H)+H)%H;const o=s.op*(.45+.55*Math.sin(s.tp));ctx.globalAlpha=o;ctx.fillStyle=s.col;ctx.beginPath();ctx.arc(s.x,py,s.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;requestAnimationFrame(draw)}
+  function init(){
+    stars=[];
+    for(let i=0;i<count;i++) stars.push({
+      x:Math.random()*W, y:Math.random()*H,
+      r:minR+Math.random()*(maxR-minR),
+      op:baseOp*(.5+Math.random()*.5),
+      ts:.004+Math.random()*.018, tp:Math.random()*Math.PI*2,
+      vx:(Math.random()-.5)*drift, vy:(Math.random()-.5)*drift,
+      col:['#fff','#c8c8ff','#aaffee','#ffeebb','#ffccdd'][Math.floor(Math.random()*5)]
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const po=SY*speed;
+    stars.forEach(s=>{
+      s.tp+=s.ts; s.x+=s.vx; s.y+=s.vy;
+      if(s.x<0)s.x=W; if(s.x>W)s.x=0;
+      const py=((s.y-po%H)+H)%H;
+      const o=s.op*(.45+.55*Math.sin(s.tp));
+      ctx.globalAlpha=o; ctx.fillStyle=s.col;
+      ctx.beginPath(); ctx.arc(s.x,py,s.r,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
   window.addEventListener('resize',()=>{resize();init()},{passive:true});
   window.addEventListener('scroll',()=>{SY=window.scrollY},{passive:true});
-  resize();init();draw();
+  resize(); init(); draw();
+  return {setSY:v=>SY=v};
+}
+makeStarfield('stars-deep',  180, .12, .9,  .025, .45, .003); // slowest, smallest
+makeStarfield('stars-mid',   220, .3,  1.4, .06,  .6,  .007); // mid
+makeStarfield('stars-close', 100, .8,  2.2, .12,  .75, .014); // fastest, biggest
+
+/* SHOOTING STARS on close layer */
+(function(){
+  const c=document.getElementById('stars-close'), ctx=c.getContext('2d');
+  const W=()=>c.width, H=()=>c.height;
+  let shooters=[];
+  function addShooter(){
+    shooters.push({
+      x:Math.random()*W(), y:Math.random()*H()*.4,
+      len:80+Math.random()*120, angle:Math.PI/5+Math.random()*.3,
+      speed:6+Math.random()*8, life:1, decay:.018+Math.random()*.012
+    });
+  }
+  setInterval(addShooter,1800+Math.random()*1200);
+  function drawShooters(){
+    shooters=shooters.filter(s=>s.life>0);
+    shooters.forEach(s=>{
+      const dx=Math.cos(s.angle)*s.len, dy=Math.sin(s.angle)*s.len;
+      const g=ctx.createLinearGradient(s.x,s.y,s.x-dx,s.y-dy);
+      g.addColorStop(0,`rgba(255,255,255,${s.life*.9})`);
+      g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.strokeStyle=g; ctx.lineWidth=1.2+s.life*.6;
+      ctx.beginPath(); ctx.moveTo(s.x,s.y); ctx.lineTo(s.x-dx,s.y-dy);
+      ctx.stroke();
+      s.x+=Math.cos(s.angle)*s.speed; s.y+=Math.sin(s.angle)*s.speed;
+      s.life-=s.decay;
+    });
+    requestAnimationFrame(drawShooters);
+  }
+  drawShooters();
 })();
 
 /* ══ NEBULA ══ */
 (function(){
   const c=document.getElementById('nebula'),ctx=c.getContext('2d');let W,H,t=0;
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
-  function draw(){ctx.clearRect(0,0,W,H);t+=.0025;
-    [{x:W*.14+Math.sin(t*.7)*W*.09,y:H*.18+Math.cos(t*.5)*H*.07,r:Math.min(W,H)*.4,c:'rgba(108,99,255,.06)'},
-     {x:W*.86+Math.cos(t*.6)*W*.07,y:H*.76+Math.sin(t*.8)*H*.07,r:Math.min(W,H)*.32,c:'rgba(0,245,212,.045)'},
-     {x:W*.5+Math.sin(t*.4+1)*W*.12,y:H*.44+Math.cos(t*.55)*H*.1,r:Math.min(W,H)*.24,c:'rgba(255,77,109,.035)'},
-     {x:W*.3+Math.cos(t*.9)*W*.06,y:H*.66+Math.sin(t*.65)*H*.06,r:Math.min(W,H)*.17,c:'rgba(255,215,0,.025)'}
+  function draw(){ctx.clearRect(0,0,W,H);t+=.002;
+    [{x:W*.14+Math.sin(t*.7)*W*.1,  y:H*.18+Math.cos(t*.5)*H*.08, r:Math.min(W,H)*.42, c:'rgba(108,99,255,.06)'},
+     {x:W*.87+Math.cos(t*.6)*W*.08, y:H*.76+Math.sin(t*.8)*H*.08, r:Math.min(W,H)*.34, c:'rgba(0,245,212,.05)'},
+     {x:W*.5+Math.sin(t*.4+1)*W*.13, y:H*.44+Math.cos(t*.55)*H*.11,r:Math.min(W,H)*.25,c:'rgba(255,77,109,.038)'},
+     {x:W*.28+Math.cos(t*.9)*W*.07, y:H*.66+Math.sin(t*.65)*H*.07,r:Math.min(W,H)*.19,c:'rgba(255,215,0,.028)'},
+     {x:W*.72+Math.sin(t*.5+2)*W*.06,y:H*.3+Math.cos(t*.7)*H*.06, r:Math.min(W,H)*.14,c:'rgba(0,245,212,.032)'}
     ].forEach(b=>{const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);g.addColorStop(0,b.c);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)});
-    requestAnimationFrame(draw)}
+    requestAnimationFrame(draw);}
   window.addEventListener('resize',resize,{passive:true});resize();draw();
 })();
 
-/* ══ CURSOR ══ */
+/* ══ CURSOR + MOUSE GLOW ══ */
 const cdot=document.getElementById('cdot'),cring=document.getElementById('cring'),ctrail=document.getElementById('ctrail');
+const mouseGlow=document.getElementById('mouse-glow');
 let mx=0,my=0,rx=0,ry=0,tx=0,ty=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cdot.style.left=mx+'px';cdot.style.top=my+'px'});
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cdot.style.left=mx+'px'; cdot.style.top=my+'px';
+  mouseGlow.style.left=mx+'px'; mouseGlow.style.top=my+'px';
+});
 (function ac(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;tx+=(mx-tx)*.055;ty+=(my-ty)*.055;cring.style.left=rx+'px';cring.style.top=ry+'px';ctrail.style.left=tx+'px';ctrail.style.top=ty+'px';requestAnimationFrame(ac)})();
 document.querySelectorAll('a,button,.pcard,.ach-card,.cert-card,.tcat,.hex-node,.fun-card,.robot-wrap').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'))});
 
 /* ══ PROGRESS ══ */
 window.addEventListener('scroll',()=>{document.getElementById('pbar').style.width=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100)+'%'},{passive:true});
 
-/* ══════════════════════════════════════
-   STRONG PARALLAX
-   Background stays fixed (CSS position:fixed on starfield/nebula).
-   Foreground sections get:
-   - Multi-speed Y translation (scroll-driven)
-   - Zoom in/out per section based on viewport proximity
-   - Orbs move at different speeds (data-plx attribute)
-   - Warp rings morph shape
-   All via rAF, smoothed with lerp.
-══════════════════════════════════════ */
-let scrollY=0,smoothY=0,lastTick=0;
+/* ══ PARALLAX ENGINE ══ */
+let scrollY=0;
+window.addEventListener('scroll',()=>{scrollY=window.scrollY},{passive:true});
 
-function lerp(a,b,t){return a+(b-a)*t}
+function plxTick(){
+  const SY=scrollY, VH=window.innerHeight;
 
-function parallaxTick(now){
-  // Smooth scroll value (eased toward real scroll)
-  smoothY=lerp(smoothY,scrollY,.1);
-  const SY=scrollY; // use raw for position
-  const VH=window.innerHeight;
-
-  // 1. Orbs — different speeds per data-plx
+  /* 1. Orbs — hero section parallax at different rates */
   document.querySelectorAll('[data-plx]').forEach(el=>{
-    const speed=parseFloat(el.dataset.plx);
-    el.style.transform=`translateY(${SY*speed}px)`;
+    el.style.transform=`translateY(${SY*parseFloat(el.dataset.plx)}px)`;
   });
 
-  // 2. Section parallax — content moves slower than scroll = parallax depth
-  // Each section moves at 0.55× scroll speed relative to its natural scroll position
-  // PLUS zoom + fade based on distance from viewport center
+  /* 2. Section zoom + opacity + Y drift — strong parallax feel */
   document.querySelectorAll('.ss').forEach(sec=>{
     const r=sec.getBoundingClientRect();
-    const progress=r.top/VH; // 0=top of vp, 1=below, -1=above
-    const dist=Math.abs(progress);
-
-    // Zoom: 0.91 when far, 1.0 when centered
-    const zoom=Math.max(.91,Math.min(1.005,1-dist*.075));
-    // Opacity: 0.15 when far, 1.0 when centered
-    const op=Math.max(.12,Math.min(1,1-dist*.28));
-    // Y nudge — content drifts slightly as it scrolls (parallax offset)
-    const yNudge=progress*-22;
-
+    const p=r.top/VH; // 0=top-of-viewport,1=below,−1=above
+    const dist=Math.abs(p);
+    const zoom=Math.max(.88,Math.min(1.008,1-dist*.09));
+    const op=Math.max(.08,Math.min(1,1-dist*.3));
+    const yNudge=p*-28;
     sec.style.transform=`scale(${zoom}) translateY(${yNudge}px)`;
     sec.style.opacity=op;
     sec.style.transformOrigin='center center';
   });
 
-  // 3. Warp rings — morphing based on scroll
+  /* 3. Warp rings morph */
   document.querySelectorAll('.wr').forEach((r,i)=>{
     const t=SY*.0018;
-    const sx=1+Math.sin(t+i*.9)*.09;
-    const sy=1+Math.cos(t+i*1.2)*.08;
-    const rz=Math.sin(t+i)*.7;
-    r.style.transform=`scaleX(${sx}) scaleY(${sy}) rotateZ(${rz}deg)`;
+    r.style.transform=`scaleX(${1+Math.sin(t+i*.9)*.1}) scaleY(${1+Math.cos(t+i*1.2)*.09}) rotateZ(${Math.sin(t+i)*.8}deg)`;
   });
 
-  // 4. Position robot chat panel beside robot (fixed position)
-  if(chatOpen){
-    positionChatPanel();
-  }
+  /* 4. Chat panel follows robot */
+  if(chatOpen) positionChatPanel();
 
-  requestAnimationFrame(parallaxTick);
+  requestAnimationFrame(plxTick);
 }
+requestAnimationFrame(plxTick);
 
-window.addEventListener('scroll',()=>{scrollY=window.scrollY},{passive:true});
-requestAnimationFrame(parallaxTick);
+/* ══ CONTACT SECTION — Mouse Color Interaction ══ */
+const contactSection=document.getElementById('contact');
+const contactOrb=document.getElementById('contact-orb');
+const contactLetters=document.querySelectorAll('#contact-title .ch-letter');
+const contactLinks=document.querySelectorAll('.clink');
 
-/* ══ CARD SPOTLIGHT + TILT ══ */
+/* Color palette cycling with mouse X position */
+const colorPalettes=[
+  {from:'rgba(108,99,255,.18)',via:'rgba(0,245,212,.1)',glow:'#6c63ff'},
+  {from:'rgba(0,245,212,.18)',via:'rgba(108,99,255,.08)',glow:'#00f5d4'},
+  {from:'rgba(255,77,109,.16)',via:'rgba(255,209,102,.06)',glow:'#ff4d6d'},
+  {from:'rgba(255,209,102,.16)',via:'rgba(255,77,109,.05)',glow:'#ffd166'},
+  {from:'rgba(192,132,252,.16)',via:'rgba(0,245,212,.08)',glow:'#c084fc'},
+];
+
+contactSection.addEventListener('mousemove',e=>{
+  const r=contactSection.getBoundingClientRect();
+  const nx=(e.clientX-r.left)/r.width;  // 0..1
+  const ny=(e.clientY-r.top)/r.height;
+
+  // Dynamic orb position
+  contactOrb.style.background=`radial-gradient(circle at ${nx*100}% ${ny*100}%, ${colorPalettes[Math.floor(nx*colorPalettes.length)].from} 0%, ${colorPalettes[Math.floor(nx*colorPalettes.length)].via} 40%, transparent 70%)`;
+
+  // Shift mouse-glow color when in contact
+  const pal=colorPalettes[Math.floor(nx*colorPalettes.length)];
+  mouseGlow.style.background=`radial-gradient(circle,${pal.from} 0%,transparent 70%)`;
+
+  // Letter proximity glow
+  contactLetters.forEach(letter=>{
+    const lr=letter.getBoundingClientRect();
+    const lx=lr.left+lr.width/2, ly=lr.top+lr.height/2;
+    const dist=Math.hypot(e.clientX-lx,e.clientY-ly);
+    const maxDist=180;
+    if(dist<maxDist){
+      const intensity=1-dist/maxDist;
+      const hue=Math.floor(nx*360);
+      letter.style.color=`hsl(${hue},90%,${70+intensity*20}%)`;
+      letter.style.textShadow=`0 0 ${intensity*30}px hsl(${hue},90%,70%), 0 0 ${intensity*60}px hsl(${hue},90%,50%)`;
+      letter.style.transform=`translateY(${-intensity*4}px) scale(${1+intensity*.05})`;
+    } else {
+      letter.style.color='';
+      letter.style.textShadow='';
+      letter.style.transform='';
+    }
+  });
+
+  // Contact links glow
+  contactLinks.forEach(link=>{
+    const lr=link.getBoundingClientRect();
+    const lx=lr.left+lr.width/2, ly=lr.top+lr.height/2;
+    const dist=Math.hypot(e.clientX-lx,e.clientY-ly);
+    if(dist<200){
+      const hue=Math.floor(nx*360+60);
+      link.style.borderColor=`hsl(${hue},80%,60%)`;
+      link.style.boxShadow=`0 0 ${(1-dist/200)*24}px hsl(${hue},80%,50%)`;
+    } else {
+      link.style.borderColor='';
+      link.style.boxShadow='';
+    }
+  });
+});
+
+contactSection.addEventListener('mouseleave',()=>{
+  contactOrb.style.background='';
+  mouseGlow.style.background='radial-gradient(circle,rgba(108,99,255,.06) 0%,transparent 70%)';
+  contactLetters.forEach(l=>{l.style.color='';l.style.textShadow='';l.style.transform=''});
+  contactLinks.forEach(l=>{l.style.borderColor='';l.style.boxShadow=''});
+});
+
+/* ══ CARD TILT + SPOTLIGHT ══ */
 document.querySelectorAll('.pcard').forEach(card=>{
   card.addEventListener('mousemove',e=>{
     const r=card.getBoundingClientRect();
     card.style.setProperty('--sx',(e.clientX-r.left)+'px');
     card.style.setProperty('--sy',(e.clientY-r.top)+'px');
-    const dx=(e.clientX-r.left-r.width/2)/(r.width/2),dy=(e.clientY-r.top-r.height/2)/(r.height/2);
+    const dx=(e.clientX-r.left-r.width/2)/(r.width/2), dy=(e.clientY-r.top-r.height/2)/(r.height/2);
     card.style.transform=`perspective(900px) rotateX(${-dy*6}deg) rotateY(${dx*6}deg) translateY(-7px)`;
   });
   card.addEventListener('mouseleave',()=>{card.style.transform=''});
@@ -995,51 +966,40 @@ setTimeout(typeIt,2500);
 /* ══ TAG STAGGER ══ */
 document.querySelectorAll('.tcat').forEach(cat=>{cat.addEventListener('mouseenter',()=>{cat.querySelectorAll('.stag').forEach((t,i)=>{t.style.transitionDelay=`${i*17}ms`})});cat.addEventListener('mouseleave',()=>{cat.querySelectorAll('.stag').forEach(t=>t.style.transitionDelay='')})});
 
-/* ══════════════════════════════════════
-   ROBOT SYSTEM
-   - Eye/mouth layout fixed (no overlap)
-   - Chat panel: fixed-position div beside robot, never over robot body
-   - Click opens chat and advances messages (NEVER toggles — each click = next message)
-   - Hover = heart eyes + excited state
-   - Auto expression cycle when idle
-══════════════════════════════════════ */
-const robot       = document.getElementById('robot');
-const robotScene  = document.getElementById('robotScene');
-const rbubble     = document.getElementById('rbubble');
-const pupL        = document.getElementById('pupL');
-const pupR        = document.getElementById('pupR');
-const rbMouth     = document.getElementById('rbMouth');
-const chatPanel   = document.getElementById('robot-chat-panel');
-const chatContent = document.getElementById('chat-content');
-const chatClose   = document.getElementById('chat-close');
+/* ══ ROBOT SYSTEM ══ */
+const robot=document.getElementById('robot');
+const robotScene=document.getElementById('robotScene');
+const rbubble=document.getElementById('rbubble');
+const pupL=document.getElementById('pupL');
+const pupR=document.getElementById('pupR');
+const rbMouth=document.getElementById('rbMouth');
+const chatPanel=document.getElementById('robot-chat-panel');
+const chatContent=document.getElementById('chat-content');
+const chatHeader=document.getElementById('chat-header');
+const chatClose=document.getElementById('chat-close');
+let chatOpen=false, chatIdx=0, bubbleTimer=null;
 
-let chatOpen = false;
-let chatIdx  = 0;
-let bubbleTimer = null;
-
-// All 10 chat conversations
-const chatConvos = [
-  {title:'Intro', msgs:["👋 Hi! I'm Dharmesh's robot buddy DH-Bot.", "I manage his PR, approve his PRs, and roast his commit messages.", "Basically indispensable. You should hire him. Also me."]},
-  {title:'Coffee & Java', msgs:["☕ Fun fact: Dharmesh debugs with coffee.", "Java the language AND the beverage.", "His IDE has a coffee-break button. It's called Ctrl+Z."]},
-  {title:'Chess Club', msgs:["♟️ He co-founded the chess club at ITER.", "Then used those same strategies in hackathons.", "Turns out 'sacrifice a pawn to win the match' works in code too."]},
-  {title:'Fitness', msgs:["🏋️ Gym every day. Gym is therapy.", "He treats pull requests like pull day.", "Push day is for git push. Balance is key."]},
-  {title:'Guitar', msgs:["🎸 He plays guitar. Sort of.", "4 chords mastered. 200 songs attempted.", "Neighbours still suffering. Progress."]},
-  {title:'Paintings', msgs:["🎨 Abstract painter when stressed.", "His best pieces were made during Java exceptions.", "The art world gains every time Java fails."]},
-  {title:'Yoga & Zen', msgs:["🧘 Meditates every morning.", "Then immediately opens 47 browser tabs.", "The balance is aspirational."]},
-  {title:'Meme Lord', msgs:["😂 Communicates 40% in code, 60% in memes.", "Variable: bigBrainEnergy. Still in production.", "If you got the reference, you're hired."]},
-  {title:'Hiring Pitch', msgs:["📌 Open to opportunities!", "Full-time, internship, collab — whatever.", "Has 6 certs, 3 hackathon wins, and 1 robot. Very complete package."]},
-  {title:'Robot Facts', msgs:["🤖 I am 100% pure CSS. No frameworks.", "Dharmesh built me from scratch.", "Which proves he's dangerously talented. Hire him or I'll blink aggressively."]},
+const chatConvos=[
+  {t:'Intro',      m:["👋 Hi! I'm Dharmesh's robot buddy DH-Bot.","I manage his PR, approve his PRs, and roast his commit messages.","Basically indispensable. You should hire him. Also me."]},
+  {t:'Coffee & Java',m:["☕ Fun fact: Dharmesh debugs with coffee.","Java the language AND the beverage.","His IDE has a coffee-break button. It's called Ctrl+Z."]},
+  {t:'Chess Club', m:["♟️ He co-founded the chess club at ITER.","Then used those same strategies in hackathons.","Turns out 'sacrifice a pawn to win' works in code too."]},
+  {t:'Fitness',    m:["🏋️ Gym every day. Gym is therapy.","He treats pull requests like pull day.","Push day is for git push. Balance is key."]},
+  {t:'Guitar',     m:["🎸 He plays guitar. Sort of.","4 chords mastered. 200 songs attempted.","Neighbours still suffering. Progress."]},
+  {t:'Paintings',  m:["🎨 Abstract painter when stressed.","His best pieces were made during Java exceptions.","The art world gains every time Java fails."]},
+  {t:'Yoga & Zen', m:["🧘 Meditates every morning.","Then immediately opens 47 browser tabs.","The balance is aspirational."]},
+  {t:'Meme Lord',  m:["😂 Communicates 40% in code, 60% in memes.","Variable: bigBrainEnergy. Still in production.","If you got the reference, you're hired."]},
+  {t:'Hiring Pitch',m:["📌 Open to opportunities!","Full-time, internship, collab — whatever.","Has 6 certs, 3 hackathon wins, and 1 robot. Very complete package."]},
+  {t:'Robot Facts', m:["🤖 I am 100% pure CSS. No frameworks.","Dharmesh built me from scratch.","Proof he's dangerously talented. Hire him or I'll blink aggressively."]},
 ];
 
-// Eye expressions: { l, r, mouth, bubble }
-const exps = {
-  normal:  {l:'',      r:'',      m:'smile',  b:'Hey! Click me 👋'},
-  heart:   {l:'heart', r:'heart', m:'smile',  b:'You hovered! I felt that ♥'},
-  sleepy:  {l:'zzz',   r:'zzz',   m:'flat',   b:'zZz... still loading... 😴'},
-  angry:   {l:'angry', r:'angry', m:'frown',  b:"Don't scroll away! 😤"},
-  sad:     {l:'sad',   r:'sad',   m:'frown',  b:'Why are you leaving? 😢'},
-  wink:    {l:'wink',  r:'',      m:'smirk',  b:"I see you looking 😏"},
-  happy:   {l:'happy', r:'happy', m:'smile',  b:'This portfolio goes hard ngl 😊'},
+const exps={
+  normal:{l:'',      r:'',      m:'smile', b:'Hey! Click me 👋'},
+  heart: {l:'heart', r:'heart', m:'smile', b:'You hovered! I felt that ♥'},
+  sleepy:{l:'zzz',   r:'zzz',   m:'flat',  b:'zZz... still loading... 😴'},
+  angry: {l:'angry', r:'angry', m:'frown', b:"Don't scroll away! 😤"},
+  sad:   {l:'sad',   r:'sad',   m:'frown', b:'Why are you leaving? 😢'},
+  wink:  {l:'wink',  r:'',      m:'smirk', b:"I see you looking 😏"},
+  happy: {l:'happy', r:'happy', m:'smile', b:'This portfolio goes hard ngl 😊'},
 };
 
 function setExp(name){
@@ -1053,135 +1013,61 @@ function setExp(name){
   bubbleTimer=setTimeout(()=>rbubble.classList.remove('show'),2800);
 }
 
-// Auto expression rotation
 const autoSeq=['normal','happy','wink','normal','normal','heart','normal','sleepy','normal','happy'];
-let autoIdx=0,autoTimer;
+let autoIdx=0, autoTimer;
 function startAutoExp(){
-  autoTimer=setInterval(()=>{
-    if(!robot.matches(':hover')&&!chatOpen){
-      setExp(autoSeq[autoIdx%autoSeq.length]);
-      autoIdx++;
-    }
-  },3800);
+  autoTimer=setInterval(()=>{if(!robot.matches(':hover')&&!chatOpen){setExp(autoSeq[autoIdx%autoSeq.length]);autoIdx++}},3800);
 }
 startAutoExp();
 
-// Hover
-robot.addEventListener('mouseenter',()=>{
-  clearInterval(autoTimer);
-  setExp('heart');
-  robot.classList.add('excited');
-});
-robot.addEventListener('mouseleave',()=>{
-  robot.classList.remove('excited');
-  setTimeout(()=>setExp('normal'),200);
-  startAutoExp();
-});
+robot.addEventListener('mouseenter',()=>{clearInterval(autoTimer);setExp('heart');robot.classList.add('excited')});
+robot.addEventListener('mouseleave',()=>{robot.classList.remove('excited');setTimeout(()=>setExp('normal'),200);startAutoExp()});
 
-// Position chat panel beside robot (to the left if near right edge, otherwise right)
 function positionChatPanel(){
-  if(!chatOpen) return;
   const rr=robot.getBoundingClientRect();
-  const panelW=288;
-  const gap=16;
-  const vw=window.innerWidth;
-
-  // Prefer right of robot; if not enough space use left
+  const panelW=286, gap=16, vw=window.innerWidth;
   let left=rr.right+gap;
   if(left+panelW>vw-16) left=rr.left-panelW-gap;
   if(left<12) left=12;
-
-  // Vertically: center on robot, clamp to viewport
-  const rCenterY=rr.top+rr.height/2;
-  let top=rCenterY-80;
-  const maxTop=window.innerHeight-260;
-  if(top<70) top=70;
-  if(top>maxTop) top=maxTop;
-
-  chatPanel.style.left=left+'px';
-  chatPanel.style.top=top+'px';
+  let top=rr.top+rr.height/2-90;
+  const maxTop=window.innerHeight-280;
+  if(top<70) top=70; if(top>maxTop) top=maxTop;
+  chatPanel.style.left=left+'px'; chatPanel.style.top=top+'px';
 }
 
-function openChat(){
-  chatOpen=true;
-  const convo=chatConvos[chatIdx%chatConvos.length];
-  chatIdx++;
-  chatPanel.querySelector('.chat-header').textContent='';
-  chatPanel.querySelector('.chat-header').innerHTML=`<span style="font-size:.9rem">🤖</span> DH-Bot // ${convo.title}`;
-  chatContent.innerHTML=convo.msgs.map(m=>`<div class="chat-msg">${m}</div>`).join('');
-  positionChatPanel();
-  chatPanel.classList.add('open');
-  // Expression on chat open
-  const clickExps=['wink','heart','happy','wink','angry','happy','heart','wink','happy','heart'];
-  setExp(clickExps[(chatIdx-1)%clickExps.length]);
+function loadChat(idx){
+  const c=chatConvos[idx%chatConvos.length];
+  chatHeader.innerHTML=`<span style="font-size:.9rem">🤖</span> DH-Bot // ${c.t}`;
+  chatContent.innerHTML=c.m.map(m=>`<div class="chat-msg">${m}</div>`).join('');
 }
 
-function advanceChat(){
-  // Just load next conversation without closing
-  const convo=chatConvos[chatIdx%chatConvos.length];
-  chatIdx++;
-  chatPanel.querySelector('.chat-header').innerHTML=`<span style="font-size:.9rem">🤖</span> DH-Bot // ${convo.title}`;
-  chatContent.innerHTML=convo.msgs.map(m=>`<div class="chat-msg">${m}</div>`).join('');
-  positionChatPanel();
-}
-
-// CLICK logic: first click opens, subsequent clicks advance (never close via robot click)
 robot.addEventListener('click',e=>{
   e.stopPropagation();
-  if(!chatOpen){
-    openChat();
-  } else {
-    advanceChat();
-  }
-  // Bounce effect
+  if(!chatOpen){chatOpen=true;loadChat(chatIdx);positionChatPanel();chatPanel.classList.add('open')}
+  else{chatIdx++;loadChat(chatIdx)}
+  const clickExps=['wink','heart','happy','wink','angry','happy','heart','wink','happy','heart'];
+  setExp(clickExps[chatIdx%clickExps.length]);
   robot.style.transform='translateY(-14px) scale(1.07)';
   setTimeout(()=>{robot.style.transform=''},300);
 });
+chatClose.addEventListener('click',e=>{e.stopPropagation();chatOpen=false;chatPanel.classList.remove('open')});
+document.addEventListener('click',e=>{if(chatOpen&&!robot.contains(e.target)&&!chatPanel.contains(e.target)){chatOpen=false;chatPanel.classList.remove('open')}});
 
-// Close button closes panel
-chatClose.addEventListener('click',e=>{
-  e.stopPropagation();
-  chatOpen=false;
-  chatPanel.classList.remove('open');
-});
-
-// Click outside also closes
-document.addEventListener('click',e=>{
-  if(chatOpen&&!robot.contains(e.target)&&!chatPanel.contains(e.target)){
-    chatOpen=false;
-    chatPanel.classList.remove('open');
-  }
-});
-
-// Mouse-move: 3D tilt + pupil tracking
+// 3D tilt + pupil tracking
 document.addEventListener('mousemove',e=>{
   const rr=robot.getBoundingClientRect();
   if(!rr.width) return;
   const cx=rr.left+rr.width/2, cy=rr.top+rr.height/2;
-  const dx=(e.clientX-cx)/window.innerWidth;
-  const dy=(e.clientY-cy)/window.innerHeight;
+  const dx=(e.clientX-cx)/window.innerWidth, dy=(e.clientY-cy)/window.innerHeight;
   robotScene.style.transform=`perspective(900px) rotateY(${dx*22}deg) rotateX(${-dy*18}deg)`;
-
-  // Pupil tracking (normal eyes only)
-  const curClass=pupL.className;
-  if(!curClass.includes('heart')&&!curClass.includes('zzz')&&!curClass.includes('angry')){
+  if(!pupL.className.includes('heart')&&!pupL.className.includes('zzz')&&!pupL.className.includes('angry')){
     const ang=Math.atan2(e.clientY-cy,e.clientX-cx);
     const dist=Math.min(3.5,Math.hypot(e.clientX-cx,e.clientY-cy)/55);
     const ox=Math.cos(ang)*dist, oy=Math.sin(ang)*dist;
-    // Use CSS transform to move pupils (separate from the class-based shape)
-    if(!pupL.classList.contains('heart')){
-      pupL.style.setProperty('--px',ox+'px');
-      pupL.style.setProperty('--py',oy+'px');
-      pupR.style.setProperty('--px',ox+'px');
-      pupR.style.setProperty('--py',oy+'px');
-    }
+    pupL.style.setProperty('--px',ox+'px'); pupL.style.setProperty('--py',oy+'px');
+    pupR.style.setProperty('--px',ox+'px'); pupR.style.setProperty('--py',oy+'px');
   }
 });
-// Add CSS var-based transform for pupil tracking
-const styleEl=document.createElement('style');
-styleEl.textContent=`.rb-pupil::after{transform:translate(calc(-50% + var(--px,0px)),calc(-50% + var(--py,0px)));transition:transform .1s ease-out}`;
-document.head.appendChild(styleEl);
-
 window.addEventListener('resize',()=>{if(chatOpen)positionChatPanel()},{passive:true});
 </script>
 </body>
